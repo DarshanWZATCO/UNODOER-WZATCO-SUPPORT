@@ -1,33 +1,35 @@
 const express = require('express');
-const router = express.Router();
 const axios = require('axios');
+const router = express.Router();
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 router.post('/', async (req, res) => {
   const { message } = req.body;
 
   try {
-    const gptResponse = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
+    const geminiRes = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
       {
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: message }],
+        contents: [
+          {
+            parts: [{ text: message }]
+          }
+        ]
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }
     );
 
-    const reply = gptResponse.data.choices[0].message.content.trim();
+    const reply = geminiRes.data.candidates?.[0]?.content?.parts?.[0]?.text || "Couldn't generate reply.";
     res.json({ reply: `🤖 UNODOER Bot: ${reply}` });
 
   } catch (error) {
-    console.error('GPT Error:', error.message);
-    res.json({ reply: '⚠️ Sorry, something went wrong with the AI.' });
+    console.error('Gemini Error:', error.message);
+    res.json({ reply: '⚠️ Sorry, Gemini AI failed.' });
   }
 });
 
