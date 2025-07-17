@@ -14,5 +14,10 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/tickets', ticketsRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
+// Add this route for root
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
