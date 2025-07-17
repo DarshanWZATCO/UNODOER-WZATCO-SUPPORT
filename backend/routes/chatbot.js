@@ -1,6 +1,6 @@
 const express = require('express');
-const router = express.Router();
 const axios = require('axios');
+const router = express.Router();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
   const { message } = req.body;
 
   try {
-    const response = await axios.post(
+    const geminiResponse = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [
@@ -24,14 +24,12 @@ router.post('/', async (req, res) => {
       }
     );
 
-    const reply =
-      response.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "⚠️ Gemini did not return a valid reply.";
-
+    const reply = geminiResponse.data.candidates?.[0]?.content?.parts?.[0]?.text || "❌ Gemini gave no reply.";
     res.json({ reply: `🤖 UNODOER Bot: ${reply}` });
+
   } catch (error) {
-    console.error('Gemini Error:', error.message);
-    res.json({ reply: '⚠️ Sorry, Gemini AI failed.' });
+    console.error("Gemini Error:", error?.response?.data || error.message);
+    res.json({ reply: "⚠️ Sorry, Gemini AI failed." });
   }
 });
 
