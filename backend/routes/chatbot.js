@@ -13,6 +13,7 @@ router.post('/', async (req, res) => {
       {
         contents: [
           {
+            role: 'user',
             parts: [{ text: message }]
           }
         ]
@@ -28,7 +29,7 @@ router.post('/', async (req, res) => {
     res.json({ reply: `🤖 UNODOER Bot: ${reply}` });
 
   } catch (error) {
-    console.error('Gemini Error:', error.message);
+    console.error('Gemini API Error:', error?.response?.data || error.message);
     res.json({ reply: '⚠️ Sorry, Gemini AI failed.' });
   }
 });
