@@ -2,21 +2,27 @@ const chatbox = document.getElementById('chatbox');
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 
-form.onsubmit = async (e) => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const message = input.value;
-  chatbox.innerHTML += `<div>User: ${message}</div>`;
+  const message = input.value.trim();
+  if (!message) return;
+
+  // Show user's message
+  chatbox.innerHTML += `<div class="user"><strong>You:</strong> ${message}</div>`;
   input.value = '';
+  chatbox.scrollTop = chatbox.scrollHeight;
+
   try {
-    const res = await fetch('https://your-app-name.onrender.com/api/chatbot', { // <--- CHANGE THIS!
+    const res = await fetch('/api/chatbot', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message })
     });
+
     const data = await res.json();
-    chatbox.innerHTML += `<div>Bot: ${data.reply}</div>`;
+    chatbox.innerHTML += `<div class="bot"><strong>Bot:</strong> ${data.reply}</div>`;
     chatbox.scrollTop = chatbox.scrollHeight;
-  } catch (err) {
-    chatbox.innerHTML += `<div><span style="color:red;">Bot not responding.</span></div>`;
+  } catch (error) {
+    chatbox.innerHTML += `<div style="color:red;"><strong>Bot:</strong> Error connecting to server.</div>`;
   }
-};
+});
