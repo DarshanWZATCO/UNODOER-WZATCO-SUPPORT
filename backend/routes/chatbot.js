@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
       }
     );
 
-    const reply = geminiRes.data.candidates?.[0]?.content?.parts?.[0]?.text || "Couldn't generate reply.";
+    const reply = geminiRes.data?.candidates?.[0]?.content?.parts?.[0]?.text || "🤖 Gemini gave no reply.";
     res.json({ reply: `🤖 UNODOER Bot: ${reply}` });
 
   } catch (error) {
