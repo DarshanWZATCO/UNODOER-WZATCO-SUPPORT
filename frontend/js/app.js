@@ -8,7 +8,7 @@ form.onsubmit = async (e) => {
   chatbox.innerHTML += `<div>User: ${message}</div>`;
   input.value = '';
   try {
-    const res = await fetch('https://your-app-name.onrender.com/api/chatbot', {
+    const res = await fetch('https://your-app-name.onrender.com/api/chatbot', { // <--- CHANGE THIS!
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ message })
