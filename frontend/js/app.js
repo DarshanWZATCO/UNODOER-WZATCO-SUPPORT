@@ -7,11 +7,13 @@ form.onsubmit = async (e) => {
   const message = input.value;
   chatbox.innerHTML += `<div>User: ${message}</div>`;
   input.value = '';
-  const res = await fetch('http://localhost:5000/api/chatbot', {
+
+  const res = await fetch('https://unodoer-support.onrender.com/api/chatbot', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ message })
   });
+
   const data = await res.json();
   chatbox.innerHTML += `<div>Bot: ${data.reply}</div>`;
   chatbox.scrollTop = chatbox.scrollHeight;
