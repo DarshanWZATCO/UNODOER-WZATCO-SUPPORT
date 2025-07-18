@@ -1,35 +1,27 @@
 const express = require('express');
-const axios = require('axios');
 const router = express.Router();
+const { OpenAI } = require('openai');
+require('dotenv').config();
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 router.post('/', async (req, res) => {
-  const { message } = req.body;
-
   try {
-    const geminiResponse = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        contents: [
-          {
-            parts: [{ text: message }]
-          }
-        ]
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const userMessage = req.body.message;
 
-    const reply = geminiResponse.data.candidates?.[0]?.content?.parts?.[0]?.text || "❌ Gemini gave no reply.";
-    res.json({ reply: `🤖 UNODOER Bot: ${reply}` });
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo', // or 'gpt-4' if you have access
+      messages: [
+        { role: 'system', content: 'You are UNODOER Support Bot, a helpful assistant for WZATCO projector users.' },
+        { role: 'user', content: userMessage }
+      ],
+    });
 
-  } catch (error) {
-    console.error("Gemini Error:", error?.response?.data || error.message);
-    res.json({ reply: "⚠️ Sorry, Gemini AI failed." });
+    const reply = completion.choices[0].message.content;
+    res.json({ reply });
+  } catch (err) {
+    console.error('OpenAI error:', err);
+    res.json({ reply: '⚠️ Sorry, OpenAI request failed.' });
   }
 });
 
